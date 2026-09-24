@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { env } from "./config/env";
 import authRoutes from "./routes/authRoutes";
+import nasaRoutes from "./routes/nasaRoutes";
 
 const app = express();
 
@@ -16,10 +17,10 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/nasa", nasaRoutes);
 
 // Acá abajo se van a ir montando las rutas que faltan:
 // app.use("/api/collections", collectionsRouter);
-// app.use("/api/nasa", nasaRouter);
 // app.use("/api/ai", aiRouter);
 
 app.listen(env.port, () => {
