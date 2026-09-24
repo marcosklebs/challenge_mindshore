@@ -17,3 +17,20 @@ export const loginSchema = z.object({
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+
+export const createCollectionSchema = z.object({
+  name: z.string().min(1, "El nombre es obligatorio"),
+  description: z.string().optional(),
+});
+
+export const updateCollectionSchema = z.object({
+  name: z.string().min(1).optional(),
+  description: z.string().optional(),
+});
+
+export const addImageSchema = z.object({
+  nasaId: z.string().min(1, "nasaId es obligatorio"),
+  title: z.string().min(1, "title es obligatorio"),
+  imageUrl: z.string().nullable(),
+  dateCreated: z.string().nullable().optional(),
+});
