@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { HomePage } from "./pages/HomePage";
+import { SearchPage } from "./pages/SearchPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Acá se define el "mapa" de URLs de la aplicación: qué componente se
@@ -18,6 +19,14 @@ export function App() {
           element={
             <ProtectedRoute>
               <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <ProtectedRoute>
+              <SearchPage />
             </ProtectedRoute>
           }
         />

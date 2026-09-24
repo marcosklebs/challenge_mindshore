@@ -1,14 +1,16 @@
 import { useAuthStore } from "../store/authStore";
+import { Navbar } from "../components/Navbar";
 
 export function HomePage() {
   const user = useAuthStore((state) => state.user);
-  const logout = useAuthStore((state) => state.logout);
 
   return (
-    <div className="page">
-      <h1>Hola, {user?.name} 👋</h1>
-      <p>Bienvenido a NASA Explorer. Acá van a ir la búsqueda de imágenes y tus colecciones.</p>
-      <button onClick={logout}>Cerrar sesión</button>
+    <div>
+      <Navbar />
+      <div className="page">
+        <h1>Hola, {user?.name} 👋</h1>
+        <p>Bienvenido a NASA Explorer. Usá el menú de arriba para buscar imágenes o ver tus colecciones.</p>
+      </div>
     </div>
   );
 }
