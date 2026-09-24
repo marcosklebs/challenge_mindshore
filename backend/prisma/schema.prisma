@@ -1,0 +1,107 @@
+// Schema de la base de datos (PostgreSQL) usando Prisma ORM.
+// Prisma lee este archivo y genera automáticamente las migraciones SQL
+// y un "cliente" tipado en TypeScript para consultar la DB sin escribir SQL a mano.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Usuarios ---
+model User {
+  id           String       @id @default(uuid())
+  email        String       @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime     @default(now())
+  collections  Collection[]
+
+  @@map("users")
+}
+
+// --- Colecciones temáticas creadas por un usuario ---
+model Collection {
+  id          String             @id @default(uuid())
+  name        String
+  description String?
+  userId      String
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime           @default(now())
+  images      CollectionImage[]
+
+  @@map("collections")
+}
+
+// --- Imagen de NASA guardada en el sistema (se crea la primera vez que alguien la agrega a una colección) ---
+model Image {
+  id          String             @id @default(uuid())
+  nasaId      String             @unique // id o "nasa_id" que devuelve la API de NASA
+  title       String
+  imageUrl    String
+  dateCreated DateTime?
+  rover       String?
+  camera      String?
+  mission     String?
+  sourceData  Json?              // guardamos la respuesta cruda de NASA por si sirve después
+  createdAt   DateTime           @default(now())
+  collections CollectionImage[]
+  aiContent   AiContent[]
+  tags        ImageTag[]
+
+  @@map("images")
+}
+
+// --- Tabla intermedia: muchas colecciones <-> muchas imágenes ---
+model CollectionImage {
+  collectionId String
+  imageId      String
+  addedAt      DateTime   @default(now())
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  image        Image      @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, imageId])
+  @@map("collection_images")
+}
+
+// --- Contenido generado por IA para una imagen ---
+enum AiContentType {
+  DESCRIPTION
+  FUN_FACT
+  HISTORICAL_CONTEXT
+}
+
+model AiContent {
+  id        String        @id @default(uuid())
+  imageId   String
+  image     Image         @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  type      AiContentType
+  content   String
+  isMocked  Boolean       @default(false) // true si se generó sin API key real de OpenAI
+  createdAt DateTime      @default(now())
+
+  @@map("ai_contents")
+}
+
+// --- Tags (diferenciador) ---
+model Tag {
+  id     String     @id @default(uuid())
+  name   String     @unique
+  images ImageTag[]
+
+  @@map("tags")
+}
+
+model ImageTag {
+  imageId    String
+  tagId      String
+  suggestedByAi Boolean @default(false)
+  image      Image    @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([imageId, tagId])
+  @@map("image_tags")
+}
