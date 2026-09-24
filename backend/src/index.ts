@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { env } from "./config/env";
+import authRoutes from "./routes/authRoutes";
 
 const app = express();
 
@@ -14,8 +15,9 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-// Acá abajo se van a ir montando las rutas reales:
-// app.use("/api/auth", authRouter);
+app.use("/api/auth", authRoutes);
+
+// Acá abajo se van a ir montando las rutas que faltan:
 // app.use("/api/collections", collectionsRouter);
 // app.use("/api/nasa", nasaRouter);
 // app.use("/api/ai", aiRouter);
