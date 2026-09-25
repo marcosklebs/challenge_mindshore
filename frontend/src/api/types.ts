@@ -18,3 +18,40 @@ export interface Collection {
   createdAt: string;
   _count?: { images: number };
 }
+
+export interface Tag {
+  id: string;
+  name: string;
+}
+
+export interface ImageTagEntry {
+  tagId: string;
+  suggestedByAi: boolean;
+  tag: Tag;
+}
+
+export interface SavedImage {
+  id: string;
+  nasaId: string;
+  title: string;
+  imageUrl: string;
+  dateCreated: string | null;
+  tags: ImageTagEntry[];
+}
+
+export interface CollectionImageEntry {
+  imageId: string;
+  addedAt: string;
+  image: SavedImage;
+}
+
+export interface CollectionDetail extends Collection {
+  images: CollectionImageEntry[];
+}
+
+export interface AiContent {
+  id: string;
+  type: "DESCRIPTION" | "FUN_FACT" | "HISTORICAL_CONTEXT";
+  content: string;
+  isMocked: boolean;
+}

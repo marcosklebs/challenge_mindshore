@@ -217,3 +217,149 @@ body {
   color: #7ee787;
   font-size: 14px;
 }
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.collection-card {
+  background: #171a2b;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.collection-card a {
+  color: white;
+  text-decoration: none;
+}
+
+.collection-card p {
+  color: #a9adcf;
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+
+.danger-button {
+  background: transparent !important;
+  border: 1px solid #ff6b6b !important;
+  color: #ff6b6b !important;
+}
+
+.timeline-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+  color: #a9adcf;
+  font-size: 14px;
+}
+
+.saved-image-card {
+  background: #171a2b;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 10px;
+}
+
+.saved-image-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.saved-image-card h3 {
+  font-size: 14px;
+  padding: 8px 10px 0;
+  margin: 0;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 10px 0;
+}
+
+.tag {
+  background: #232746;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tag-ai {
+  border: 1px solid #5b6cff;
+}
+
+.tag button {
+  background: none;
+  border: none;
+  color: #a9adcf;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+}
+
+.tag-form {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px 0;
+}
+
+.tag-form input {
+  flex: 1;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #333756;
+  background: #0b0d17;
+  color: white;
+  font-size: 12px;
+}
+
+.link-button {
+  background: none !important;
+  border: none !important;
+  color: #5b6cff !important;
+  text-align: left;
+  padding: 6px 10px !important;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ai-content-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 10px;
+}
+
+.ai-content-buttons button {
+  font-size: 11px;
+  padding: 6px 8px;
+}
+
+.ai-content-box {
+  margin: 6px 10px 0;
+  padding: 8px;
+  background: #0b0d17;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #d5d7ea;
+}
+
+.mocked-badge {
+  color: #a9adcf;
+  font-style: italic;
+  font-size: 11px;
+}
