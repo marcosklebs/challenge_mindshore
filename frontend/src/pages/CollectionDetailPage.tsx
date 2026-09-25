@@ -10,6 +10,9 @@ export function CollectionDetailPage() {
   const [collection, setCollection] = useState<CollectionDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Base del diferenciador "timeline": ordenar las imágenes guardadas por
+  // su fecha original de NASA en vez del orden en que se agregaron.
+  const [sortByDate, setSortByDate] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -29,6 +32,14 @@ export function CollectionDetailPage() {
   if (error) return <p className="page error-message">{error}</p>;
   if (!collection) return null;
 
+  const images = sortByDate
+    ? [...collection.images].sort((a, b) => {
+        const dateA = a.image.dateCreated ? new Date(a.image.dateCreated).getTime() : 0;
+        const dateB = b.image.dateCreated ? new Date(b.image.dateCreated).getTime() : 0;
+        return dateA - dateB;
+      })
+    : collection.images;
+
   return (
     <div>
       <Navbar />
@@ -37,8 +48,17 @@ export function CollectionDetailPage() {
         <h1>{collection.name}</h1>
         {collection.description && <p>{collection.description}</p>}
 
+        <label className="timeline-toggle">
+          <input
+            type="checkbox"
+            checked={sortByDate}
+            onChange={(e) => setSortByDate(e.target.checked)}
+          />
+          Ver como línea de tiempo (ordenado por fecha)
+        </label>
+
         <div className="image-grid">
-          {collection.images.map((entry) => (
+          {images.map((entry) => (
             <SavedImageCard
               key={entry.imageId}
               collectionId={collection.id}
@@ -48,7 +68,7 @@ export function CollectionDetailPage() {
           ))}
         </div>
 
-        {collection.images.length === 0 && (
+        {images.length === 0 && (
           <p>Esta colección todavía no tiene imágenes. Buscá alguna y guardala acá.</p>
         )}
       </div>
