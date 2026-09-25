@@ -1,20 +1,53 @@
-services: 
-  postgres: 
-    image: postgres:16-alpine 
-    container_name: mindshore_postgres 
-    restart: unless-stopped 
-    environment: 
-      POSTGRES_USER: mindshore 
-      POSTGRES_PASSWORD: mindshore 
-      POSTGRES_DB: mindshore_challenge 
-    ports: 
-      - "5432:5432" 
-    volumes: 
-      - postgres_data:/var/lib/postgresql/data 
-    healthcheck: 
-      test: ["CMD-SHELL", "pg_isready -U mindshore"] 
-      interval: 5s 
-      timeout: 5s 
-      retries: 5 
-volumes: 
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mindshore_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mindshore
+      POSTGRES_PASSWORD: mindshore
+      POSTGRES_DB: mindshore_challenge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mindshore"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: mindshore_backend
+    restart: unless-stopped
+    # No arrancamos el backend hasta que Postgres esté "healthy" de verdad,
+    # no solo iniciado (si no, la primera migración podría fallar por una
+    # carrera de tiempos).
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://mindshore:mindshore@postgres:5432/mindshore_challenge"
+      PORT: 4000
+      JWT_SECRET: "cambiar-este-secreto-en-produccion"
+      NASA_API_KEY: "DEMO_KEY"
+      OPENAI_API_KEY: ""
+      FRONTEND_URL: "http://localhost:5173"
+    ports:
+      - "4000:4000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: "http://localhost:4000/api"
+    container_name: mindshore_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
   postgres_data:
