@@ -1,135 +1,107 @@
-# MindShore - Desafio Técnico
+# NASA Explorer — Challenge MindShore
 
-**Plataforma de Exploración Espacial con IA**
+## ¿Qué construí y por qué tomé las decisiones que tomé?
 
-> Crea una aplicación web fullstack que permita explorar, curar y enriquecer contenido espacial de NASA utilizando IA generativa.
+Construí una aplicación full-stack para buscar imágenes del archivo público de la NASA, guardarlas en colecciones personales, taggearlas (manual o con sugerencias de IA) y generar contenido descriptivo sobre ellas con IA.
 
-Este challenge es abierto y público. No necesitas que nadie te invite. Si sos desarrollador/a y querés sumarte a MindShore, este es tu punto de entrada.
+**Stack:**
 
-## ¿Cómo participar?
+| Capa | Tecnología | Motivo |
+|---|---|---|
+| Frontend | React + Vite + TypeScript | Ecosistema más usado del mercado, Vite da un dev server rápido con recarga instantánea |
+| Backend | Node.js + Express + TypeScript | Mismo lenguaje que el frontend, reduce la curva de aprendizaje |
+| Base de datos | PostgreSQL + Prisma ORM | El modelo de datos (usuarios → colecciones → imágenes → tags) es relacional por naturaleza, con relaciones muchos-a-muchos que Prisma modela de forma simple |
+| Autenticación | JWT + bcrypt | Estándar simple y stateless para una API REST, sin dependencias externas |
+| Contenedores | Docker + docker-compose | Levantar los 3 servicios (frontend, backend, DB) con un solo comando |
+
+**Decisiones técnicas destacadas:**
+
+- **API de NASA elegida — NASA Image and Video Library** (`images-api.nasa.gov`): es pública y no requiere API key, a diferencia de otras APIs de NASA. Trade-off: no expone campos estructurados de "rover"/"cámara"/"misión" (esos son de la API de fotos de rovers de Marte, distinta), así que mi búsqueda avanzada filtra por texto libre y rango de años en vez de esos campos específicos.
+- **IA con fallback mock**: implementé la integración real con la API de OpenAI, pero al no tener billing activo, el servicio detecta la ausencia de `OPENAI_API_KEY` y genera contenido simulado con el mismo formato de respuesta (marcado con `isMocked: true`). El código de la integración real está completo y se activa con solo cargar la variable de entorno.
+- **Upsert en vez de validaciones manuales de duplicados**: tanto al guardar una imagen en una colección como al asignar un tag, uso `upsert` de Prisma para evitar duplicados de forma atómica, en lugar de hacer un `find` seguido de un `create` condicional.
+
+## ¿Qué diferenciadores elegí y por qué?
+
+Elegí **sistema de tags** y **timeline interactivo**, priorizando profundidad en menos features antes que cubrir muchos diferenciadores de forma superficial:
+
+1. **Sistema de tags (manual + sugerido por IA)**: el usuario puede agregar tags a mano a cualquier imagen guardada, o pedirle a la IA que sugiera 3-5 tags según el título de la imagen (con fallback heurístico si no hay API key de OpenAI, buscando palabras clave conocidas del ámbito espacial en el título). Los tags sugeridos por IA se marcan visualmente distinto de los manuales.
+2. **Timeline interactivo**: dentro de una colección, un toggle permite reordenar las imágenes guardadas de la fecha más antigua a la más reciente (según la fecha real de captura/publicación que devuelve la API de NASA), en vez del orden en que se agregaron.
+
+## ¿Qué mejoraría con más tiempo?
+
+1. **Más cobertura de tests** — hoy hay 6 tests unitarios en el backend (JWT y validaciones), pero ninguno de integración con la base de datos ni tests de componentes en el frontend.
+2. **Paginación** — la búsqueda de NASA y el listado de imágenes de una colección traen todo de una, sin paginar. Con colecciones grandes esto se volvería lento.
+3. **Búsqueda semántica** — permitir escribir la búsqueda en lenguaje natural y que la IA la traduzca a los parámetros que entiende la API de NASA, en vez de depender de que el usuario escriba las palabras clave exactas.
+4. **Editar nombre/descripción de una colección desde la interfaz** — el endpoint `PATCH /api/collections/:id` ya existe en el backend, pero todavía no lo conecté a ningún botón del frontend.
+5. **Deploy funcional** — decidí priorizar dejar todo funcionando 100% en local con un solo comando de Docker antes que invertir tiempo en deployarlo a un hosting real.
+
+## Cosas a saber antes de revisar
+
+- **Cómo levantarlo**: `docker compose up -d --build` desde la raíz, y listo — no hace falta configurar ninguna variable de entorno, los valores por defecto ya están en `docker-compose.yml`. Instrucciones completas más abajo.
+- **Sin API key de OpenAI**: las funciones de IA (descripciones, tags sugeridos) funcionan igual, mostrando contenido simulado marcado explícitamente como "(simulado)" en la interfaz. No hace falta cargar ninguna key para evaluar el flujo completo.
+- **Sin API key de NASA**: la API que uso (Image and Video Library) no la requiere.
+- Ver `backend/.env.example` y `frontend/.env.example` para la lista completa de variables de entorno documentadas.
+
+## Cómo levantar el proyecto
+
+### Opción A: con Docker (recomendada, un solo comando)
+
+Requiere tener Docker instalado y corriendo.
+
+```bash
+docker compose up -d --build
+```
+
+Levanta 3 contenedores: PostgreSQL, backend (puerto 4000) y frontend (puerto 5173). La primera vez tarda un par de minutos en construir las imágenes.
+
+Abrí http://localhost:5173 en el navegador.
+
+Para bajar todo: `docker compose down` (los datos de Postgres persisten en un volumen; para borrarlos también: `docker compose down -v`).
+
+### Opción B: en local, sin Docker (para desarrollo)
+
+Requiere Node.js 20+ y Docker solo para la base de datos.
+
+```bash
+# 1. Base de datos
+docker compose up -d postgres
+
+# 2. Backend
+cd backend
+npm install
+copy .env.example .env      (cp en Mac/Linux)
+npx prisma migrate dev
+npm run dev                  (http://localhost:4000)
+
+# 3. Frontend (en otra terminal)
+cd frontend
+npm install
+copy .env.example .env      (cp en Mac/Linux)
+npm run dev                  (http://localhost:5173)
+```
+
+## Correr los tests
+
+```bash
+cd backend
+npm test
+```
+
+## Estructura del proyecto
 
 ```
-1. Forkeá este repositorio
-2. Leé este README completo antes de escribir una sola línea de código
-3. Construí tu solución
-4. Abrí un Pull Request contra este repo con tu trabajo
-5. Nuestro equipo de ingeniería lo revisa y te da feedback
+backend/
+  prisma/schema.prisma   -> modelo de datos
+  src/
+    routes/               -> definicion de endpoints
+    controllers/          -> manejo de request/response
+    services/             -> logica de negocio y llamadas a APIs externas
+    middleware/            -> autenticacion JWT
+    __tests__/             -> tests unitarios
+frontend/
+  src/
+    pages/                -> paginas (login, busqueda, colecciones, etc.)
+    components/            -> componentes reutilizables
+    store/                 -> estado global (Zustand)
+    api/                   -> cliente HTTP y tipos compartidos
 ```
-
-**No hay fecha límite.** Valoramos la calidad sobre la velocidad. Tomate el tiempo que necesites para demostrar tu mejor trabajo.
-
-## El desafío
-
-### Objetivo
-
-Crear una aplicación web fullstack que conecte con la API de NASA para explorar imágenes espaciales, permita a los usuarios organizar ese contenido en colecciones, y use IA generativa (OpenAI) para enriquecer la experiencia.
-
-### Funcionalidades core (obligatorias)
-
-| Feature | Descripción |
-|---------|-------------|
-| **Búsqueda avanzada** | Buscar imágenes de NASA con filtros: fecha, rover, cámara, misión |
-| **Colecciones personalizadas** | Los usuarios pueden crear múltiples colecciones temáticas, no solo "favoritos" |
-| **Enriquecimiento con IA** | Generar descripciones, datos curiosos o contexto historico de las imágenes usando OpenAI (o cualquier LLM) |
-| **Autenticación** | Registro, login, y que cada usuario tenga sus propias colecciones |
-
-### Diferenciadores (elegir al menos 2)
-
-| Feature | Descripción |
-|---------|-------------|
-| Comparador de imágenes | Seleccionar 2+ imágenes y ver side-by-side con análisis comparativo generado por IA |
-| Timeline interactivo | Visualizar imágenes en una línea de tiempo navegable |
-| Exportar coleccion | Generar un PDF o presentación con las imágenes y descripciones |
-| Búsqueda semántica | Buscar imágenes por descripción natural ("mostrame atardeceres en Marte") |
-| Sistema de tags | Taggear imágenes manualmente o con sugerencias de IA |
-
-## Requisitos técnicos
-
-### Frontend
-
-- Framework moderno (React, Vue 3, Angular, Svelte)
-- Estado global (Redux, Pinia, Zustand, o similar)
-- Diseño responsive
-- Manejo de estados de carga, error y vacío
-- Al menos **un test unitario** de componente
-
-### Backend
-
-- API RESTful o GraphQL
-- Autenticación con JWT o sesiones
-- Validación de inputs
-- Rate limiting básico para proteger las llamadas a APIs externas
-- Al menos **un test unitario o de integración**
-
-### Base de datos
-
-- Modelado relacional (PostgreSQL, MySQL, etc.) o documental coherente (MongoDB, Firebase, etc.)
-- Migraciones o seeds para facilitar el setup (o scripts para poblar datos iniciales)
-
-### DevOps (bonus)
-
-- Dockerizar la aplicación (`docker-compose` para levantar todo)
-- README con arquitectura y decisiones técnicas
-
-## APIs requeridas
-
-| API | Documentación |
-|-----|---------------|
-| NASA Image and Video Library | https://api.nasa.gov |
-| OpenAI GPT | https://platform.openai.com/docs |
-
-> **Nota:** La API de NASA es gratuita y solo requiere una API key que podes obtener en https://api.nasa.gov. Para OpenAI, podes usar el free tier o documentar como se integraria si no tenes acceso.
-
-## Criterios de evaluación
-
-| Aspecto | Peso |
-|---------|------|
-| Funcionalidad completa | 25% |
-| Calidad y claridad del código | 25% |
-| Arquitectura y estructura del proyecto | 20% |
-| UI/UX y atención al detalle | 15% |
-| Testing y documentación | 10% |
-| Creatividad y extras | 5% |
-
-## Entrega
-
-Tu Pull Request debe incluir:
-
-- **Código fuente completo** con historial de commits (queremos ver tu proceso)
-- **README en tu repo** con:
-  - Instrucciones de instalación y ejecución
-  - Decisiones técnicas y trade-offs
-  - Que harías con más tiempo
-- **Deploy funcional** es un plus (Vercel, Railway, Render, etc.)
-
-### Estructura del PR
-
-En la descripción de tu PR, contanos:
-
-1. ¿Qué construiste y por qué tomaste las decisiones que tomaste?
-2. ¿Qué diferenciadores elegiste y por qué?
-3. ¿Qué mejorías si tuvieras más tiempo?
-4. ¿Cualquier cosa que quieras que sepamos antes de revisar?
-
-## Consejos para destacar
-
-- **Commits atomicos y descriptivos** — nos importa ver como pensas, no un solo commit con todo
-- **Maneja errores de forma elegante** — tanto en frontend como backend. Los estados vacios y de error son parte de la UX
-- **Pensa en la seguridad** — no expongas API keys en el codigo, valida inputs, sanitiza datos
-- **Documenta las decisiones tecnicas** — especialmente los trade-offs. "Elegi X porque Y" vale más que la solución perfecta sin explicación
-- **Sorprendenos** — que harias diferente si este fuera tu producto?
-
-## ¿Preguntas?
-
-Si algo no esta claro, [abri un issue](https://github.com/mindshoresl/challenge/issues) en este repositorio. Hacer buenas preguntas es una habilidad que valoramos mucho.
-
-También podés escribirnos a **talent@mindshore.io**.
-
-## Sobre MindShore
-
-Somos una empresa de tecnología con presencia en mas de 12 países. Trabajamos en proyectos de Data & Analytics, Software Engineering, ERP/CRM e IA aplicada para clientes globales.
-
-Más info en [mindshore.io](https://mindshore.io/) y nuestro [LinkedIn](https://www.linkedin.com/company/mindshore)
-
-
-**Buena suerte. Esperamos ver tu talento.**
