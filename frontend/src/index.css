@@ -118,12 +118,33 @@ body {
   border-radius: 10px;
   padding: 8px 14px;
   cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+/* Sin "transform: scale" acá a propósito: este botón suele vivir pegado al
+   borde inferior de una tarjeta con overflow recortado, y agrandarlo al
+   hacer hover hacía que se viera "cortado" contra el borde de la tarjeta. */
+.danger-button:hover {
+  background: rgba(255, 107, 107, 0.15);
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 16px;
+  background: transparent;
+  color: #a9adcf;
+  border: 1px solid #333756;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  text-decoration: none;
   transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
-.danger-button:hover {
-  background: rgba(255, 107, 107, 0.1);
-  transform: scale(1.05);
+.back-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: scale(1.03);
+  color: white;
 }
 
 .navbar {
@@ -237,12 +258,10 @@ body {
   display: flex;
   gap: 8px;
   margin-top: 8px;
-  flex-wrap: wrap;
 }
 
 .new-collection-form input {
   flex: 1;
-  min-width: 0;
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #333756;
@@ -345,6 +364,13 @@ body {
   margin: 0;
 }
 
+.saved-image-date {
+  font-size: 12px;
+  color: #a9adcf;
+  padding: 2px 10px 0;
+  margin: 0;
+}
+
 .tag-list {
   display: flex;
   flex-wrap: wrap;
@@ -375,14 +401,19 @@ body {
   font-size: 14px;
 }
 
+.tag-form-wrap {
+  position: relative;
+  padding: 8px 10px 0;
+}
+
 .tag-form {
   display: flex;
   gap: 6px;
-  padding: 8px 10px 0;
 }
 
 .tag-form input {
   flex: 1;
+  min-width: 0;
   padding: 4px 8px;
   border-radius: 6px;
   border: 1px solid #333756;
@@ -391,14 +422,48 @@ body {
   font-size: 12px;
 }
 
-.link-button {
-  background: none !important;
-  border: none !important;
-  color: #5b6cff !important;
+.tag-form .btn {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.tag-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 10px;
+  right: 10px;
+  z-index: 5;
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 4px;
+  background: #232746;
+  border: 1px solid #333756;
+  border-radius: 8px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.tag-dropdown li button {
+  width: 100%;
   text-align: left;
-  padding: 6px 10px !important;
+  background: none;
+  border: none;
+  color: #d5d7ea;
+  padding: 6px 8px;
   font-size: 12px;
   cursor: pointer;
+  border-radius: 4px;
+}
+
+.tag-dropdown li button:hover {
+  background: #333756;
+}
+
+.suggest-tags-button {
+  margin: 8px 10px 0;
+  font-size: 12px;
+  padding: 6px 10px;
+  align-self: flex-start;
 }
 
 .ai-content-buttons {

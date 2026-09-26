@@ -80,12 +80,21 @@ export async function suggestTagsForImage(title: string, keywords: string[] = []
     return raw.split(",").map((t) => t.trim()).filter(Boolean);
   }
 
-  // Mock: heurística simple, buscamos palabras clave conocidas en el título
-  // y las keywords que ya vienen de la propia API de NASA.
-  const titleWords = title.toLowerCase().split(/\W+/);
-  const found = COMMON_SPACE_KEYWORDS.filter((kw) => titleWords.includes(kw));
-  const fromNasaKeywords = keywords.slice(0, 3);
+  // Mock, en 3 capas (de más a menos específico):
+  // 1. Las keywords reales que ya vienen de la propia API de NASA (lo más
+  //    específico y confiable que tenemos, sin necesidad de IA real).
+  // 2. Palabras conocidas del ámbito espacial que aparezcan en el título.
+  // 3. Si con eso no alcanza, las palabras más largas del título (suelen
+  //    ser sustantivos relevantes: nombres propios, lugares, objetos).
+  const titleWords: string[] = title.toLowerCase().match(/[a-záéíóúñ]+/g) ?? [];
 
-  const tags = Array.from(new Set([...found, ...fromNasaKeywords]));
-  return tags.length > 0 ? tags : ["Espacio", "NASA"];
+  const fromNasaKeywords = keywords.slice(0, 4).map((k) => k.toLowerCase());
+  const knownMatches = COMMON_SPACE_KEYWORDS.filter((kw) => titleWords.includes(kw));
+  const titleFallback = titleWords
+    .filter((w) => w.length > 4 && !COMMON_SPACE_KEYWORDS.includes(w))
+    .sort((a, b) => b.length - a.length)
+    .slice(0, 3);
+
+  const combined = Array.from(new Set([...fromNasaKeywords, ...knownMatches, ...titleFallback]));
+  return combined.length > 0 ? combined.slice(0, 5) : ["espacio", "nasa"];
 }

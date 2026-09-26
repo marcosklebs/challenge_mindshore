@@ -11,6 +11,15 @@ function handleError(err: unknown, res: Response) {
   return res.status(500).json({ error: "Error interno del servidor" });
 }
 
+export async function listAll(_req: AuthRequest, res: Response) {
+  try {
+    const tags = await tagService.listAllTags();
+    return res.status(200).json(tags);
+  } catch (err) {
+    return handleError(err, res);
+  }
+}
+
 export async function list(req: AuthRequest, res: Response) {
   try {
     const tags = await tagService.listTagsForImage(req.params.imageId);

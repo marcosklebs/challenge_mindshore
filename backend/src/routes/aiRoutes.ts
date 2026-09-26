@@ -19,6 +19,9 @@ const aiLimiter = rateLimit({
 // Contenido generado por IA (descripción / dato curioso / contexto histórico)
 router.post("/images/:imageId/content", aiLimiter, aiController.generateContent);
 
+// Lista global de tags existentes (para el autocompletado del frontend)
+router.get("/tags", tagController.listAll);
+
 // Tags manuales
 router.get("/images/:imageId/tags", tagController.list);
 router.post("/images/:imageId/tags", tagController.addManual);

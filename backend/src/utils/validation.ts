@@ -33,4 +33,5 @@ export const addImageSchema = z.object({
   title: z.string().min(1, "title es obligatorio"),
   imageUrl: z.string().nullable(),
   dateCreated: z.string().nullable().optional(),
+  keywords: z.array(z.string()).optional(),
 });

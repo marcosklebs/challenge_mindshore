@@ -30,6 +30,7 @@ export function AddToCollectionModal({ image, onClose }: Props) {
           title: image.title,
           imageUrl: image.imageUrl,
           dateCreated: image.dateCreated,
+          keywords: image.keywords,
         },
       });
       setStatusMessage("¡Imagen guardada!");

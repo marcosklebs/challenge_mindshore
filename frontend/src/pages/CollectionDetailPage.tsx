@@ -44,7 +44,9 @@ export function CollectionDetailPage() {
     <div>
       <Navbar />
       <div className="page">
-        <Link to="/collections">← Volver a mis colecciones</Link>
+        <Link to="/collections" className="back-link">
+          ← Volver a mis colecciones
+        </Link>
         <h1>{collection.name}</h1>
         {collection.description && <p>{collection.description}</p>}
 

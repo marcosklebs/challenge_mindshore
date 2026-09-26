@@ -46,6 +46,7 @@ model Image {
   rover       String?
   camera      String?
   mission     String?
+  keywords    String[]           @default([]) // keywords originales de la API de NASA, usadas para sugerir tags mas variados
   sourceData  Json?              // guardamos la respuesta cruda de NASA por si sirve después
   createdAt   DateTime           @default(now())
   collections CollectionImage[]

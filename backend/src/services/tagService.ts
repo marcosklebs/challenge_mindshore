@@ -13,6 +13,13 @@ async function getImageOrThrow(imageId: string) {
   return image;
 }
 
+// Lista TODOS los tags que existen en el sistema (sin filtrar por imagen).
+// Se usa para el autocompletado al agregar un tag manual, así el usuario
+// puede reutilizar un tag que ya creó antes en vez de escribirlo de nuevo.
+export async function listAllTags() {
+  return prisma.tag.findMany({ orderBy: { name: "asc" } });
+}
+
 export async function listTagsForImage(imageId: string) {
   await getImageOrThrow(imageId);
   return prisma.imageTag.findMany({
@@ -50,7 +57,7 @@ export async function removeTag(imageId: string, tagId: string) {
 // las deja o las borra (en vez de mostrarlas "flotando" sin persistir).
 export async function generateAiTagSuggestions(imageId: string) {
   const image = await getImageOrThrow(imageId);
-  const suggested = await suggestTagsForImage(image.title, []);
+  const suggested = await suggestTagsForImage(image.title, image.keywords);
 
   const results = [];
   for (const name of suggested) {

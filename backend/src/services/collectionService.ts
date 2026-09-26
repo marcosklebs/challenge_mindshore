@@ -77,6 +77,7 @@ export interface NasaImageInput {
   title: string;
   imageUrl: string | null;
   dateCreated?: string | null;
+  keywords?: string[];
 }
 
 export async function addImageToCollection(
@@ -97,6 +98,7 @@ export async function addImageToCollection(
       title: imageInput.title,
       imageUrl: imageInput.imageUrl ?? "",
       dateCreated: imageInput.dateCreated ? new Date(imageInput.dateCreated) : null,
+      keywords: imageInput.keywords ?? [],
     },
   });
 
