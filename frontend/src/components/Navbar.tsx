@@ -18,7 +18,7 @@ export function Navbar() {
       </div>
       <div className="navbar-user">
         <span>{user?.name}</span>
-        <button onClick={logout}>Cerrar sesión</button>
+        <button className="logout-button" onClick={logout}>Cerrar sesión</button>
       </div>
     </nav>
   );

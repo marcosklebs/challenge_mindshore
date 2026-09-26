@@ -542,3 +542,17 @@ body {
   padding: 4px 10px 10px;
   margin: 0;
 }
+
+.logout-button {
+  background: #333756;
+  color: #d5d7ea;
+  border: 1px solid #333756;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.logout-button:hover {
+  background: #454a72;
+  transform: scale(1.05);
+}
