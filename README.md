@@ -24,8 +24,8 @@ Construí una aplicación full-stack para buscar imágenes del archivo público 
 
 Elegí **sistema de tags** y **timeline interactivo**, priorizando profundidad en menos features antes que cubrir muchos diferenciadores de forma superficial:
 
-1. **Sistema de tags (manual + sugerido por IA)**: el usuario puede agregar tags a mano a cualquier imagen guardada, o pedirle a la IA que sugiera 3-5 tags según el título de la imagen (con fallback heurístico si no hay API key de OpenAI, buscando palabras clave conocidas del ámbito espacial en el título). Los tags sugeridos por IA se marcan visualmente distinto de los manuales.
-2. **Timeline interactivo**: dentro de una colección, un toggle permite reordenar las imágenes guardadas de la fecha más antigua a la más reciente (según la fecha real de captura/publicación que devuelve la API de NASA), en vez del orden en que se agregaron.
+1. **Sistema de tags (manual + sugerido por IA)**: el usuario puede agregar tags a mano a cualquier imagen guardada (con autocompletado de los tags ya existentes en el sistema), o pedirle a la IA que sugiera 3-5 tags. Sin API key de OpenAI, el fallback heurístico combina las keywords reales que ya trae cada imagen desde la propia API de NASA con palabras relevantes extraídas del título, en vez de depender de una lista fija de palabras clave. Los tags sugeridos por IA se marcan visualmente distinto de los manuales.
+2. **Timeline interactivo**: implementado en dos lugares. Dentro de una colección, un toggle reordena las imágenes guardadas de la fecha más antigua a la más reciente (según la fecha real de captura/publicación que devuelve la API de NASA). En la página de Inicio, un carrusel horizontal muestra una selección aleatoria de imágenes del archivo de NASA también ordenadas cronológicamente, que se renueva en cada visita, como forma de invitar a explorar antes de buscar algo puntual.
 
 ## ¿Qué mejoraría con más tiempo?
 
@@ -104,4 +104,5 @@ frontend/
     components/            -> componentes reutilizables
     store/                 -> estado global (Zustand)
     api/                   -> cliente HTTP y tipos compartidos
+    utils/                 -> funciones compartidas (formateo de fechas, etc.)
 ```
