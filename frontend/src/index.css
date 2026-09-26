@@ -9,6 +9,12 @@ body {
   color: #f0f0f5;
 }
 
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
 .auth-page {
   min-height: 100vh;
   display: flex;
@@ -62,10 +68,46 @@ body {
   font-size: 14px;
 }
 
-.page {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 32px;
+/* ---------- Botón genérico reutilizable ----------
+   Todo botón "normal" de la app usa esta clase como base. Si un botón puntual
+   necesita verse distinto (más chico, de otro color porque es una acción
+   destructiva, etc.), se le agrega una clase adicional específica para ese
+   caso en vez de reinventar el estilo desde cero. */
+.btn {
+  background: #333756;
+  color: #d5d7ea;
+  font-size: 13px;
+  border: 1px solid #333756;
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.btn:hover {
+  background: #454a72;
+  transform: scale(1.05);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.danger-button {
+  background: transparent;
+  border: 1px solid #ff6b6b;
+  color: #ff6b6b;
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.danger-button:hover {
+  background: rgba(255, 107, 107, 0.1);
+  transform: scale(1.05);
 }
 
 .navbar {
@@ -99,22 +141,31 @@ body {
   gap: 12px;
 }
 
+/* ---------- Búsqueda ---------- */
+
+.search-box {
+  max-width: 700px;
+  margin: 24px auto 40px;
+  background: #171a2b;
+  border-radius: 12px;
+  padding: 24px;
+}
+
 .search-form {
   display: flex;
   gap: 8px;
-  margin: 20px 0;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .search-form input {
   padding: 8px 10px;
   border-radius: 6px;
   border: 1px solid #333756;
-  background: #171a2b;
+  background: #0b0d17;
   color: white;
 }
 
-.search-form button,
-.navbar-user button,
 .modal button {
   padding: 8px 14px;
   border-radius: 6px;
@@ -129,30 +180,6 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
   margin-top: 20px;
-}
-
-.image-card {
-  background: #171a2b;
-  border-radius: 10px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.image-card img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-}
-
-.image-card h3 {
-  font-size: 14px;
-  padding: 8px 10px 4px;
-  margin: 0;
-}
-
-.image-card button {
-  margin: 8px 10px 10px;
 }
 
 .modal-backdrop {
@@ -243,12 +270,6 @@ body {
   color: #a9adcf;
   font-size: 13px;
   margin: 4px 0 0;
-}
-
-.danger-button {
-  background: transparent !important;
-  border: 1px solid #ff6b6b !important;
-  color: #ff6b6b !important;
 }
 
 .timeline-toggle {
@@ -364,6 +385,8 @@ body {
   font-size: 11px;
 }
 
+/* ---------- Home: banner ---------- */
+
 .hero {
   height: 80vh;
   min-height: 480px;
@@ -406,9 +429,7 @@ body {
   margin-top: 8px;
 }
 
-.scroll-cue {
-  display: none;
-}
+/* ---------- Home: dato curioso ---------- */
 
 .fun-fact-card {
   display: flex;
@@ -432,30 +453,15 @@ body {
   flex: 1;
 }
 
-.fun-fact-button {
-  flex-shrink: 0;
-  align-self: center;
-  background: #333756;
-  color: #d5d7ea;
-  font-size: 12px;
-  border: 1px solid #333756;
-  border-radius: 10px;
-  padding: 6px 12px;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.15s ease;
-}
-
-.fun-fact-button:hover {
-  background: #454a72;
-  transform: scale(1.05);
-}
-
 .section-subtitle {
   color: #a9adcf;
   font-size: 14px;
   margin-top: -8px;
 }
+
+/* ---------- Tarjetas de imagen tipo "carrusel" ----------
+   Usadas tanto en la timeline de la Home como en los resultados de
+   Búsqueda, para que ambas pantallas se vean consistentes. */
 
 .timeline-scroll {
   display: flex;
@@ -463,8 +469,6 @@ body {
   overflow-x: auto;
   padding: 8px 4px 20px;
   scroll-snap-type: x mandatory;
-  /* Personalizamos el color de la barra de scroll para que combine con el
-     resto de la paleta oscura, en vez de la barra blanca por defecto. */
   scrollbar-color: #333756 #0b0d17;
   scrollbar-width: thin;
 }
@@ -541,18 +545,4 @@ body {
   color: #a9adcf;
   padding: 4px 10px 10px;
   margin: 0;
-}
-
-.logout-button {
-  background: #333756;
-  color: #d5d7ea;
-  border: 1px solid #333756;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.15s ease;
-}
-
-.logout-button:hover {
-  background: #454a72;
-  transform: scale(1.05);
 }

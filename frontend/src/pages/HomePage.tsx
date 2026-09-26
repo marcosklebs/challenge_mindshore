@@ -3,6 +3,7 @@ import { apiRequest } from "../api/client";
 import type { NasaImageResult } from "../api/types";
 import { Navbar } from "../components/Navbar";
 import { AddToCollectionModal } from "../components/AddToCollectionModal";
+import { formatDate } from "../utils/format";
 
 interface SearchResponse {
   results: NasaImageResult[];
@@ -19,8 +20,6 @@ const FUN_FACTS = [
   "Los anillos de Saturno están hechos casi en su totalidad de hielo, con solo una pequeña fracción de roca y polvo.",
 ];
 
-// Pool grande de búsquedas: en cada carga de la página elegimos un subconjunto
-// al azar, así la timeline muestra cosas distintas cada vez que se entra.
 const QUERY_POOL = [
   "galaxy", "nebula", "saturn", "earth", "astronaut", "mars",
   "jupiter", "moon landing", "black hole", "space shuttle",
@@ -41,15 +40,6 @@ function pickRandomFact(exclude?: string): string {
   return options[Math.floor(Math.random() * options.length)];
 }
 
-function formatDate(dateString: string | null): string {
-  if (!dateString) return "Fecha desconocida";
-  return new Date(dateString).toLocaleDateString("es-AR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
 export function HomePage() {
   const [heroImage, setHeroImage] = useState<string | null>(null);
   const [funFact, setFunFact] = useState(() => pickRandomFact());
@@ -57,9 +47,6 @@ export function HomePage() {
   const [loadingTimeline, setLoadingTimeline] = useState(true);
   const [selectedImage, setSelectedImage] = useState<NasaImageResult | null>(null);
 
-  // Banner: usamos específicamente la 6ta imagen de la búsqueda (índice 5),
-  // que es la que mejor quedó visualmente. Si por algún motivo no tiene
-  // imagen válida, caemos a la primera que sí la tenga.
   useEffect(() => {
     apiRequest<SearchResponse>("/nasa/search?q=earth+from+space", { auth: false })
       .then((data) => {
@@ -70,9 +57,6 @@ export function HomePage() {
       .catch(() => setHeroImage(null));
   }, []);
 
-  // Timeline: elegimos 7 búsquedas al azar del pool, y de cada una tomamos
-  // hasta 3 imágenes random (no siempre las mismas), para juntar 20+ fotos
-  // distintas en cada carga de la página.
   useEffect(() => {
     const chosenQueries = shuffle(QUERY_POOL).slice(0, 7);
 
@@ -122,10 +106,7 @@ export function HomePage() {
           <p>
             <strong>¿Sabías que...?</strong> {funFact}
           </p>
-          <button
-            className="fun-fact-button"
-            onClick={() => setFunFact((current) => pickRandomFact(current))}
-          >
+          <button className="btn" onClick={() => setFunFact((current) => pickRandomFact(current))}>
             Otro dato
           </button>
         </div>
