@@ -17,9 +17,16 @@ export async function listCollections(userId: string) {
     where: { userId },
     orderBy: { createdAt: "desc" },
     include: {
-      // "_count" nos trae solo la cantidad de imágenes de cada colección,
-      // sin traer todas las imágenes completas (más liviano para una lista).
+      // "_count" nos trae solo la cantidad total de imágenes, sin traerlas
+      // todas (más liviano para una lista).
       _count: { select: { images: true } },
+      // Además traemos hasta 3 imágenes (las primeras agregadas) para
+      // mostrar como "preview" miniatura en la tarjeta de la colección.
+      images: {
+        take: 3,
+        orderBy: { addedAt: "asc" },
+        select: { image: { select: { imageUrl: true } } },
+      },
     },
   });
 }

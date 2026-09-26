@@ -7,6 +7,7 @@ import { Navbar } from "../components/Navbar";
 export function CollectionsPage() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -26,6 +27,7 @@ export function CollectionsPage() {
     try {
       await apiRequest("/collections", { method: "POST", body: { name: newName } });
       setNewName("");
+      setCreating(false);
       loadCollections();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al crear la colección");
@@ -48,14 +50,33 @@ export function CollectionsPage() {
       <div className="page">
         <h1>Mis colecciones</h1>
 
-        <form onSubmit={handleCreate} className="new-collection-form" style={{ maxWidth: 400 }}>
-          <input
-            placeholder="Nombre de la nueva colección"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-          />
-          <button type="submit">Crear</button>
-        </form>
+        {!creating ? (
+          <button className="btn" onClick={() => setCreating(true)}>
+            + Crear nueva colección
+          </button>
+        ) : (
+          <form onSubmit={handleCreate} className="new-collection-form" style={{ maxWidth: 420 }}>
+            <input
+              autoFocus
+              placeholder="Nombre de la colección"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+            />
+            <button type="submit" className="btn">
+              Crear
+            </button>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => {
+                setCreating(false);
+                setNewName("");
+              }}
+            >
+              Cancelar
+            </button>
+          </form>
+        )}
 
         {error && <p className="error-message">{error}</p>}
         {loading && <p>Cargando...</p>}
@@ -64,6 +85,15 @@ export function CollectionsPage() {
           {collections.map((c) => (
             <div key={c.id} className="collection-card">
               <Link to={`/collections/${c.id}`}>
+                <div className="collection-preview">
+                  {c.images && c.images.length > 0 ? (
+                    c.images.map((entry, i) => (
+                      <img key={i} src={entry.image.imageUrl} alt="" />
+                    ))
+                  ) : (
+                    <div className="collection-preview-empty">Sin imágenes todavía</div>
+                  )}
+                </div>
                 <h3>{c.name}</h3>
                 <p>{c._count?.images ?? 0} imágenes</p>
               </Link>

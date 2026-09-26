@@ -95,6 +95,22 @@ body {
   transform: none;
 }
 
+.btn-outline {
+  background: transparent;
+  color: #a9adcf;
+  border: 1px solid #333756;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: scale(1.05);
+}
+
 .danger-button {
   background: transparent;
   border: 1px solid #ff6b6b;
@@ -166,15 +182,6 @@ body {
   color: white;
 }
 
-.modal button {
-  padding: 8px 14px;
-  border-radius: 6px;
-  border: none;
-  background: #5b6cff;
-  color: white;
-  cursor: pointer;
-}
-
 .image-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -217,17 +224,25 @@ body {
 .collection-pick-list button {
   width: 100%;
   text-align: left;
-  background: #232746;
+}
+
+.modal-preview-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 .new-collection-form {
   display: flex;
   gap: 8px;
   margin-top: 8px;
+  flex-wrap: wrap;
 }
 
 .new-collection-form input {
   flex: 1;
+  min-width: 0;
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #333756;
@@ -270,6 +285,34 @@ body {
   color: #a9adcf;
   font-size: 13px;
   margin: 4px 0 0;
+}
+
+.collection-preview {
+  display: flex;
+  gap: 4px;
+  height: 70px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.collection-preview img {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.collection-preview-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0b0d17;
+  color: #6b7099;
+  font-size: 12px;
+  border-radius: 8px;
 }
 
 .timeline-toggle {

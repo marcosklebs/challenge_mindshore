@@ -7,11 +7,10 @@ interface Props {
   onClose: () => void;
 }
 
-// Modal simple: muestra las colecciones del usuario para elegir una, o un
-// formulario para crear una colección nueva sin salir de la búsqueda.
 export function AddToCollectionModal({ image, onClose }: Props) {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState("");
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
@@ -50,6 +49,7 @@ export function AddToCollectionModal({ image, onClose }: Props) {
       await saveToCollection(collection.id);
       setCollections((prev) => [collection, ...prev]);
       setNewCollectionName("");
+      setCreating(false);
     } catch (err) {
       setStatusMessage(err instanceof Error ? err.message : "Error al crear la colección");
     }
@@ -57,9 +57,12 @@ export function AddToCollectionModal({ image, onClose }: Props) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      {/* stopPropagation evita que un click DENTRO del modal lo cierre */}
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>Guardar en una colección</h2>
+
+        {image.imageUrl && (
+          <img src={image.imageUrl} alt={image.title} className="modal-preview-image" />
+        )}
         <p className="modal-image-title">{image.title}</p>
 
         {statusMessage && <p className="status-message">{statusMessage}</p>}
@@ -72,23 +75,44 @@ export function AddToCollectionModal({ image, onClose }: Props) {
           <ul className="collection-pick-list">
             {collections.map((c) => (
               <li key={c.id}>
-                <button onClick={() => saveToCollection(c.id)}>{c.name}</button>
+                <button className="btn" onClick={() => saveToCollection(c.id)}>
+                  {c.name}
+                </button>
               </li>
             ))}
           </ul>
         )}
 
-        <form onSubmit={createAndSave} className="new-collection-form">
-          <input
-            placeholder="Nombre de colección nueva"
-            value={newCollectionName}
-            onChange={(e) => setNewCollectionName(e.target.value)}
-          />
-          <button type="submit">Crear y guardar</button>
-        </form>
+        {!creating ? (
+          <button className="btn-outline" onClick={() => setCreating(true)}>
+            + Crear nueva colección
+          </button>
+        ) : (
+          <form onSubmit={createAndSave} className="new-collection-form">
+            <input
+              autoFocus
+              placeholder="Nombre de colección nueva"
+              value={newCollectionName}
+              onChange={(e) => setNewCollectionName(e.target.value)}
+            />
+            <button type="submit" className="btn">
+              Crear y guardar
+            </button>
+            <button
+              type="button"
+              className="btn-outline"
+              onClick={() => {
+                setCreating(false);
+                setNewCollectionName("");
+              }}
+            >
+              X
+            </button>
+          </form>
+        )}
 
-        <button className="modal-close" onClick={onClose}>
-          Cerrar
+        <button className="btn-outline" onClick={onClose}>
+          Cancelar
         </button>
       </div>
     </div>

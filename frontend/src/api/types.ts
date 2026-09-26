@@ -17,6 +17,8 @@ export interface Collection {
   description: string | null;
   createdAt: string;
   _count?: { images: number };
+  // Preview: hasta 3 imágenes de la colección, solo la URL (para miniaturas)
+  images?: { image: { imageUrl: string } }[];
 }
 
 export interface Tag {
